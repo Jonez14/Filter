@@ -1,0 +1,17 @@
+<h3>Login form</h3>
+
+<p>
+<%= flash[:my_error] %>
+</p>
+
+<%= form_tag(verify_path, :method => 'post') do %>
+ <p>
+ <table>
+   <tr><td>Email:</td><td><%= text_field_tag "email" %></td></tr>
+   <tr><td>Password:</td><td><%= text_field_tag "secret" %></td></tr>
+ </table>
+ </p>
+ <p>
+   <%= submit_tag 'Login' %>
+ </p>
+<% end %>
