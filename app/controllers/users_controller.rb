@@ -1,4 +1,6 @@
+require 'digest/sha1'
 class UsersController < ApplicationController
+   before_filter :authenticated?, :except =>:login ##**** added
   # GET /users
   # GET /users.json
   def index
@@ -82,38 +84,32 @@ class UsersController < ApplicationController
   end
 
   ## Added as part of assignment
+
+  def secret
+  end
+
   def login
   end
 
-  def verify
-    # Already logged in?
-    return redirect_to(secret_path) if authenticated?
-
-    # Otherwise, check it out (with old-style ActiveRecord)
-    user = User.find :first,
-                     :conditions => 
-                     ["email = ? and password = ?", params[:email], params[:secret]]
-
-    if user.nil?
-      flash[:my_error] = "Bad email or password."
-      render :action => 'login'
-    else
-      session[:_email] = user.email
-      redirect_to(secret_path)
-    end
-  end
-
   def logout
-    session[:_email] = nil
-    redirect_to users_path
+    session[:user] = nil
+    redirect_to users_url
   end
 
-  def secret
-    if authenticated?
-      render :text => "<center><h4>To get here, you had to be logged in.</h4></center>"
+  def verify
+    hash_pass = Digest::SHA1.hexdigest(params[:hash_pwd])
+    user = params[:user]
+    user = User.find(:first,
+                     :conditions => ["name = ?", user])
+    if user.nil? or user.hash_pwd != hash_pass
+
+      flash[:notice] = 'Bad username/password'
+      redirect_to :controller => 'users', 
+                  :action     => 'login'
     else
-      flash[:my_error] = "You are not authenticated."
-      redirect_to(login_path)
+      session[:user]  = user
+      redirect_to session[:request_uri]
     end
   end
+
 end

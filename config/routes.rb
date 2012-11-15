@@ -1,9 +1,11 @@
 Auth::Application.routes.draw do
-  resources :users
 
-  match 'secret' => 'users#secret',  :as => :secret
-  match 'login'  => 'users#login',   :as => :login
-  match 'verify' => 'users#verify',  :as => :verify
+root to: "users#secret"
+  resources :users
+  match '/login'  => 'users#login',   :as => :login
+  match '/logout' => 'users#logout', :as => :logout
+  match '/secret' => 'users#secret',  :as => :secret
+  match '/verify' => 'users#verify',  :as => :verify
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
